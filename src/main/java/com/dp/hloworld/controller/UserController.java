@@ -4,6 +4,7 @@ import com.dp.hloworld.config.JwtResponse;
 import com.dp.hloworld.helper.JwtUtil;
 import com.dp.hloworld.model.LogIn;
 import com.dp.hloworld.model.User;
+import com.dp.hloworld.model.UserConstants;
 import com.dp.hloworld.repository.UserRepository;
 import com.dp.hloworld.service.CustomUserDetailsService;
 import com.dp.hloworld.service.UserService;
@@ -18,10 +19,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -88,6 +89,33 @@ public class UserController {
         Option<User> user  = userRepository.findByContact(login.getUserName());
         final String jwt = jwtUtil.generateToken(user.get(),userDetails);
         return new ResponseEntity<>(new JwtResponse(jwt),HttpStatus.OK);
+    }
+
+
+    @GetMapping("/check")
+    public ResponseEntity<?> checkUser(HttpServletRequest request){
+        log.info("request length: {}", request.getContentLength());
+        if(request.getContentLength()==0){
+            return  new ResponseEntity<>("token Not Found!!!",HttpStatus.NOT_FOUND);
+        }
+        log.info("request: {}", request);
+        String requestHeader = request.getHeader("Authorization");
+        if(requestHeader!=null && requestHeader.startsWith("Bearer ")) {
+            String jwtToken = requestHeader.substring(7);
+            if(jwtUtil.isTokenExpired(jwtToken)){
+                return  new ResponseEntity<>("User Not Found!!!",HttpStatus.NOT_FOUND);
+            }
+            else if(!jwtUtil.isTokenExpired(jwtToken)){
+                Map<String, String> map = jwtUtil.getJwtTokenDetails(request);
+                Option<User> userOptional = userRepository.findByContact(map.get(UserConstants.contactNo));
+                if (!userOptional.isEmpty())
+                    return new ResponseEntity<>(userOptional.get(),HttpStatus.OK);
+                else
+                    return  new ResponseEntity<>("User Not Found!!!",HttpStatus.NOT_FOUND);
+            }
+
+        }
+        return new ResponseEntity<>("No Key found",HttpStatus.UNAUTHORIZED);
     }
 
 }

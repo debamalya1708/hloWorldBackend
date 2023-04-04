@@ -1,5 +1,6 @@
 package com.dp.hloworld.service;
 
+import com.dp.hloworld.model.User;
 import com.dp.hloworld.model.Video;
 import com.dp.hloworld.model.VideoResponse;
 import com.dp.hloworld.repository.UserRepository;
@@ -33,12 +34,14 @@ public class VideoService {
         List<Video> videos =  videoRepository.findAll();
         List<VideoResponse> videoResponses = new ArrayList<>();
         for (Video video:videos) {
+            User uploader = userRepository.findById(video.getUploaderId()).get();
+            uploader.setPassword("");
             VideoResponse videoResponse =VideoResponse.builder().id(video.getId())
                     .title(video.getTitle())
                     .description(video.getDescription())
                     .category(video.getCategory())
                     .language(video.getLanguage())
-                    .uploader(userRepository.findById(video.getUploaderId()).get())
+                    .uploader(uploader)
                     .createdAt(video.getCreatedAt())
                     .updatedAt(video.getUpdatedAt())
                     .thumbnailImg(video.getThumbnailImg())

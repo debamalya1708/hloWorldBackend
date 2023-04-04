@@ -53,13 +53,15 @@ public class VideoController {
     public VideoResponse findVideo(@PathVariable long id) {
 
         Video video =  videoService.getVideo(id).get();
+        User uploader = userRepository.findById(video.getUploaderId()).get();
+        uploader.setPassword("");
 
         VideoResponse videoResponse =VideoResponse.builder().id(video.getId())
                 .title(video.getTitle())
                 .description(video.getDescription())
                 .category(video.getCategory())
                 .language(video.getLanguage())
-                .uploader(userRepository.findById(video.getUploaderId()).get())
+                .uploader(uploader)
                 .createdAt(video.getCreatedAt())
                 .updatedAt(video.getUpdatedAt())
                 .thumbnailImg(video.getThumbnailImg())
@@ -73,6 +75,27 @@ public class VideoController {
     @GetMapping(value="/all")
     public List<VideoResponse> findAllVideo() {
         return videoService.getAllVideo();
+    }
+
+    @PostMapping("/view")
+    public void viewCount(@RequestBody Video video) {
+        long views =video.getViews();
+        views++;
+        video.setViews(views);
+        update(video);
+    }
+
+    @PostMapping("/like")
+    public void likeCount(@RequestBody Video video) {
+        long likes =video.getLikes();
+        likes++;
+        video.setViews(likes);
+        update(video);
+    }
+
+    @PutMapping("/update")
+    public Video update(@RequestBody Video video) {
+        return videoService.saveVideo(video);
     }
 
     public String getContact(HttpServletRequest request) {
