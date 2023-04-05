@@ -1,14 +1,15 @@
 package com.dp.hloworld.controller;
 
 import com.dp.hloworld.helper.JwtUtil;
-import com.dp.hloworld.model.User;
-import com.dp.hloworld.model.UserConstants;
-import com.dp.hloworld.model.Video;
-import com.dp.hloworld.model.VideoResponse;
+import com.dp.hloworld.model.*;
+import com.dp.hloworld.repository.CommentRepository;
+import com.dp.hloworld.repository.LikeRepository;
 import com.dp.hloworld.repository.UserRepository;
+import com.dp.hloworld.repository.ViewsRepository;
 import com.dp.hloworld.service.UserService;
 import com.dp.hloworld.service.VideoService;
 import io.vavr.control.Option;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @NoArgsConstructor
@@ -32,6 +34,15 @@ public class VideoController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ViewsRepository viewsRepository;
+
+    @Autowired
+    private LikeRepository likeRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -78,19 +89,41 @@ public class VideoController {
     }
 
     @PostMapping("/view")
-    public void viewCount(@RequestBody Video video) {
-        long views =video.getViews();
-        views++;
-        video.setViews(views);
+    public void viewCount(@RequestBody long videoId,HttpServletRequest request) {
+        String contactNo = getContact(request);
+        Option<User> userOptional = userRepository.findByContact(contactNo);
+        Views views = Views.builder().videoId(videoId).userId(userOptional.get().getId())
+                .viewedAt(Date.valueOf(
+                        LocalDate.now())).build();
+        viewsRepository.save(views);
+        Video video = videoService.getVideo(videoId).get();
+        long viewsCount =videoService.getVideo(videoId).get().getViews();
+        viewsCount++;
+        video.setViews(viewsCount);
         update(video);
     }
 
     @PostMapping("/like")
-    public void likeCount(@RequestBody Video video) {
-        long likes =video.getLikes();
-        likes++;
-        video.setViews(likes);
+    public void likeCount(@RequestBody long videoId,HttpServletRequest request) {
+        String contactNo = getContact(request);
+        Option<User> userOptional = userRepository.findByContact(contactNo);
+        Likes likes = Likes.builder().videoId(videoId).userId(userOptional.get().getId()).likedAt(Date.valueOf(
+                LocalDate.now())).build();
+        likeRepository.save(likes);
+        Video video = videoService.getVideo(videoId).get();
+        long likesCount =video.getLikes();
+        likesCount++;
+        video.setViews(likesCount);
         update(video);
+    }
+
+    @PostMapping("/comment/new")
+    public void newComment(@RequestBody CommentRequest commentRequest,HttpServletRequest request) {
+        String contactNo = getContact(request);
+        Option<User> userOptional = userRepository.findByContact(contactNo);
+        Comment comment = Comment.builder().videoId(commentRequest.getVideoId()).userId(userOptional.get().getId())
+                .comments(commentRequest.getComment()).createdAt(Date.valueOf(LocalDate.now())).build();
+        commentRepository.save(comment);
     }
 
     @PutMapping("/update")
@@ -109,6 +142,12 @@ public class VideoController {
             }
         }
         return contact;
+    }
+
+    @Data
+    static class CommentRequest{
+        String comment;
+        long videoId;
     }
 
 }

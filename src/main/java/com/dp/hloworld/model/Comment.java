@@ -14,46 +14,26 @@ import java.sql.Date;
 @Data
 @Builder
 @Entity
-@Table(name = "video")
-public class Video {
+@Table(name = "comment")
+public class Comment {
 
     private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column
     private long id;
 
-    @Column
-    private String title;
+    @Column(name = "video_id")
+    private Long videoId;
 
-    @Column
-    private String description;
+    @Column(name = "comments")
+    private String comments;
 
-    @Column
-    private String category;
-
-    @Column
-    private String language;
-
-    @Column(name = "uploader_id")
-    private long uploaderId;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "created_at")
     private Date createdAt;
-
-    @Column(name = "updated_at")
-    private Date updatedAt;
-
-    @Column(name = "thumbnail_image")
-    private String thumbnailImg;
-
-    @Column(name = "video_file")
-    private String videoFile;
-
-    @Column
-    private long views;
-
-    @Column
-    private long likes;
 }

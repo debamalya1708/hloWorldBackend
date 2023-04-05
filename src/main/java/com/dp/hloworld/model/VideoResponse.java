@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -28,6 +29,8 @@ public class VideoResponse {
     private String thumbnailImg;
 
     private String videoFile;
+
+    private List<Comment> comments;
 
     private long views;
 
