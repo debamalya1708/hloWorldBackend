@@ -2,10 +2,11 @@ package com.dp.hloworld.controller;
 
 import com.dp.hloworld.config.JwtResponse;
 import com.dp.hloworld.helper.JwtUtil;
-import com.dp.hloworld.model.LogIn;
-import com.dp.hloworld.model.User;
-import com.dp.hloworld.model.UserConstants;
+import com.dp.hloworld.model.*;
+import com.dp.hloworld.repository.FavouriteRepository;
+import com.dp.hloworld.repository.LikeRepository;
 import com.dp.hloworld.repository.UserRepository;
+import com.dp.hloworld.repository.ViewsRepository;
 import com.dp.hloworld.service.CustomUserDetailsService;
 import com.dp.hloworld.service.UserService;
 import io.vavr.control.Option;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -47,6 +49,10 @@ public class UserController {
 
 
     private final UserRepository userRepository;
+
+    private final LikeRepository likeRepository;
+    private final ViewsRepository viewsRepository;
+    private final FavouriteRepository favouriteRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user){
@@ -108,8 +114,20 @@ public class UserController {
             else if(!jwtUtil.isTokenExpired(jwtToken)){
                 Map<String, String> map = jwtUtil.getJwtTokenDetails(request);
                 Option<User> userOptional = userRepository.findByContact(map.get(UserConstants.contactNo));
+                List<Long> viewsList = viewsRepository.findByUserId(userOptional.get().getId());
+                List<Long> likesList = likeRepository.findByUserId(userOptional.get().getId());
+                List<Long> favouriteList = favouriteRepository.findByUserId(userOptional.get().getId());
+
+                UserResponse userResponse = UserResponse.builder().id(userOptional.get().getId())
+                        .name(userOptional.get().getName())
+                        .contact(userOptional.get().getContact())
+                        .email(userOptional.get().getEmail())
+                        .likesList(likesList)
+                        .viewsList(viewsList)
+                        .favouritesList(favouriteList)
+                        .build();
                 if (!userOptional.isEmpty())
-                    return new ResponseEntity<>(userOptional.get(),HttpStatus.OK);
+                    return new ResponseEntity<>(userResponse,HttpStatus.OK);
                 else
                     return  new ResponseEntity<>("User Not Found!!!",HttpStatus.NOT_FOUND);
             }

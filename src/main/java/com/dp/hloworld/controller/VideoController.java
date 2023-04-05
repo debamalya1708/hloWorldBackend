@@ -104,7 +104,7 @@ public class VideoController {
     }
 
     @PostMapping("/like")
-    public void likeCount(@RequestBody long videoId,HttpServletRequest request) {
+    public void likeCount(@RequestParam long videoId,HttpServletRequest request) {
         String contactNo = getContact(request);
         Option<User> userOptional = userRepository.findByContact(contactNo);
         Likes likes = Likes.builder().videoId(videoId).userId(userOptional.get().getId()).likedAt(Date.valueOf(
