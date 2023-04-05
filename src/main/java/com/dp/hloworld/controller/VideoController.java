@@ -6,6 +6,7 @@ import com.dp.hloworld.repository.CommentRepository;
 import com.dp.hloworld.repository.LikeRepository;
 import com.dp.hloworld.repository.UserRepository;
 import com.dp.hloworld.repository.ViewsRepository;
+import com.dp.hloworld.service.CommentService;
 import com.dp.hloworld.service.UserService;
 import com.dp.hloworld.service.VideoService;
 import io.vavr.control.Option;
@@ -31,6 +32,9 @@ public class VideoController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
     @Autowired
     private UserRepository userRepository;
@@ -78,6 +82,7 @@ public class VideoController {
                 .thumbnailImg(video.getThumbnailImg())
                 .videoFile(video.getVideoFile())
                 .views(video.getViews())
+                .comments(commentService.findByVideoId(id))
                 .likes(video.getLikes()).build();
 
         return videoResponse;

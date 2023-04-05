@@ -30,7 +30,7 @@ public class VideoResponse {
 
     private String videoFile;
 
-    private List<Comment> comments;
+    private List<CommentResponse> comments;
 
     private long views;
 
