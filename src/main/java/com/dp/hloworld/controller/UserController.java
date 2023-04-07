@@ -3,10 +3,7 @@ package com.dp.hloworld.controller;
 import com.dp.hloworld.config.JwtResponse;
 import com.dp.hloworld.helper.JwtUtil;
 import com.dp.hloworld.model.*;
-import com.dp.hloworld.repository.FavouriteRepository;
-import com.dp.hloworld.repository.LikeRepository;
-import com.dp.hloworld.repository.UserRepository;
-import com.dp.hloworld.repository.ViewsRepository;
+import com.dp.hloworld.repository.*;
 import com.dp.hloworld.service.CustomUserDetailsService;
 import com.dp.hloworld.service.UserService;
 import io.vavr.control.Option;
@@ -47,7 +44,7 @@ public class UserController {
 
     private final UserService userService;
 
-
+private final VideoRepository videoRepository;
     private final UserRepository userRepository;
 
     private final LikeRepository likeRepository;
@@ -105,6 +102,7 @@ public class UserController {
             return  new ResponseEntity<>("token Not Found!!!",HttpStatus.NOT_FOUND);
         }
         log.info("request: {}", request);
+
         String requestHeader = request.getHeader("Authorization");
         if(requestHeader!=null && requestHeader.startsWith("Bearer ")) {
             String jwtToken = requestHeader.substring(7);
@@ -125,6 +123,7 @@ public class UserController {
                         .likesList(likesList)
                         .viewsList(viewsList)
                         .favouritesList(favouriteList)
+                        .videos(videoRepository.findVideoByUploaderId(userOptional.get().getId()))
                         .build();
                 if (!userOptional.isEmpty())
                     return new ResponseEntity<>(userResponse,HttpStatus.OK);

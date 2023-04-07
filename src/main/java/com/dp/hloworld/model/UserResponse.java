@@ -23,4 +23,6 @@ public class UserResponse {
     private List<Long> viewsList;
 
     private List<Long> favouritesList;
+
+    private List<Video> videos;
 }
