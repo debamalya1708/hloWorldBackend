@@ -1,6 +1,5 @@
 package com.dp.hloworld.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,40 +7,26 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 @Entity
-@Table(name = "user")
-
-public class User {
+@Table(name = "subscribe")
+public class Subscribe {
 
     private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column
     private long id;
 
-    @Column(name = "email")
-    private String email;
+    @Column(name = "uploader_id")
+    private long uploaderId;
 
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "contact")
-    private String contact;
-
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "image")
-    private String image;
-
-    @Column(name = "subscriber")
-    private long subscriber;
+    @Column(name = "subscriber_id")
+    private long subscriberId;
 
 }

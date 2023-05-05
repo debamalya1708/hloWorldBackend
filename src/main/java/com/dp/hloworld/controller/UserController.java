@@ -51,6 +51,8 @@ private final VideoRepository videoRepository;
     private final ViewsRepository viewsRepository;
     private final FavouriteRepository favouriteRepository;
 
+    private final SubscribeRepository subscribeRepository;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user){
         log.info("#  sign up in user with mobile - {}", user);
@@ -115,6 +117,7 @@ private final VideoRepository videoRepository;
                 List<Long> viewsList = viewsRepository.findByUserId(userOptional.get().getId());
                 List<Long> likesList = likeRepository.findByUserId(userOptional.get().getId());
                 List<Long> favouriteList = favouriteRepository.findByUserId(userOptional.get().getId());
+                List<Long> subscriberList = subscribeRepository.findAllUploaderIdBySubscriberId(userOptional.get().getId());
 
                 UserResponse userResponse = UserResponse.builder().id(userOptional.get().getId())
                         .name(userOptional.get().getName())
@@ -123,6 +126,8 @@ private final VideoRepository videoRepository;
                         .likesList(likesList)
                         .viewsList(viewsList)
                         .favouritesList(favouriteList)
+                        .subscriberList(subscriberList)
+                        .image(userOptional.get().getImage())
                         .videos(videoRepository.findVideoByUploaderId(userOptional.get().getId()))
                         .build();
                 if (!userOptional.isEmpty())

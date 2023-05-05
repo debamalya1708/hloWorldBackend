@@ -18,7 +18,7 @@ public class FileUploadHelper {
 
     //		public final String UPLOAD_DIR = "C:\\Users\\debam\\Documents\\SpringRestDataMySQL\\SpringRestDataMySQL\\src\\main\\resources\\template\\static\\";
     public final String UPLOAD_DIR_IMG = new ClassPathResource("static\\image").getFile().getAbsolutePath();
-    public final String UPLOAD_DIR_VDO = new ClassPathResource("static\\video").getFile().getAbsolutePath();
+    public final String UPLOAD_DIR_VDO = new ClassPathResource("static\\videos").getFile().getAbsolutePath();
 
     public FileUploadHelper() throws IOException {
 
@@ -57,9 +57,9 @@ public class FileUploadHelper {
         try {
             String random_path = "_" + getRandomPath()+".";
             String final_file_name = multipartFile.getOriginalFilename().split("\\.")[0]+random_path+multipartFile.getOriginalFilename().split("\\.")[1];
-            Files.copy(multipartFile.getInputStream(), Paths.get(UPLOAD_DIR_VDO + "\\" + final_file_name), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(multipartFile.getInputStream(), Paths.get(UPLOAD_DIR_IMG + "\\" + final_file_name), StandardCopyOption.REPLACE_EXISTING);
             f = true;
-            System.out.println(UPLOAD_DIR_VDO + "\\" + final_file_name);
+            System.out.println(UPLOAD_DIR_IMG + "\\" + final_file_name);
 
             return final_file_name;
         } catch (Exception e) {

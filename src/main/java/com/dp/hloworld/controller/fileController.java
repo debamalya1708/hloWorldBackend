@@ -69,7 +69,7 @@ public class fileController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Try again");
 		}
 		
-		@PostMapping(value="/video/upload")
+		@PostMapping(value="/file/movie/upload")
 		public ResponseEntity<String> uploadMovie(@RequestParam("video_file") MultipartFile file){
 			
 			try {
@@ -84,7 +84,7 @@ public class fileController {
 				if(f) {
 //					return ResponseEntity.ok("File is succesfully updated");
 //					return ResponseEntity.ok(ServletUriComponentsBuilder.fromCurrentContextPath().path("/video/").path(file.getOriginalFilename()).toUriString());
-					return ResponseEntity.ok(ServletUriComponentsBuilder.fromCurrentContextPath().path("/video/").path(uploadath).toUriString());
+					return ResponseEntity.ok(ServletUriComponentsBuilder.fromCurrentContextPath().path("/image/").path(uploadath).toUriString());
 				}
 			}
 			catch(Exception e){
